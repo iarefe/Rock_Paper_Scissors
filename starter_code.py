@@ -2,18 +2,26 @@
 import random
 """This program plays a game of Rock, Paper, Scissors between two Players,
 and reports both Player's scores each round."""
-choicefst=input("Choose how you want to play"" [ A-randomPlayer B-RepeatPlayer C-ReflectPlayer D- CyclerPlayer] ").lower()
+
 moves = ['rock', 'paper', 'scissors']
+
 """The Player class is the parent class for all of the Players
 in this game"""
+
 
 class Player:
     def move(self):
         return 'rock'
-    def __init__(self):
-        self.scores=0
-    def learn(self, my_move, their_move):
 
+    def __init__(self):
+        self.score = 0
+        self.my_move_ = random.choice(moves)
+        self.their_move_ = random.choice(moves)
+
+    def learn(self, my_move, their_move):
+        self.my_move_ = my_move
+        self.their_move_ = their_move
+        return
 
 
 class RandomPlayer(Player):
@@ -21,29 +29,35 @@ class RandomPlayer(Player):
         return random.choice(moves)
 
 
-class RepeatPlayer(Player):
-    def __init__(self):
-        self.my_move=random.choice(moves)
-    def move(self):
-        return self.my_move
-
-
 class ReflectPlayer(Player):
-    def __init__(self):
-        super().__init__()
-        self.their_move=random.choice(moves)
     def move(self):
-        return self.their_move
+        return self.their_move_
 
-class CyclerPlayer(Player):
+
+class CyclePlayer(Player):
     def move(self):
-        pass
+        if self.my_move_ == 'rock':
+            return 'paper'
+        elif self.my_move_ == 'paper':
+            return 'scissors'
+        else:
+            return 'rock'
+
 
 class HumanPlayer(Player):
-    #move=input("what is your game:\n1-Rock\n2-paper\n3-scissors\n?"")
-    #usermove.self
-    def Humanuser(arg):
-        pass
+    def move(self):
+        userinput = input('how u will be playing? rock or paper or'
+                          + ' scissors? please make sure u write a'
+                          + ' full word:  ').lower()
+        if userinput == 'q':
+            exit()
+        elif userinput in moves:
+            return userinput
+        else:
+            print('your input is wrong please rewrite it')
+            return self.move()  # re callimg the function agien
+
+
 def beats(one, two):
     return ((one == 'rock' and two == 'scissors') or
             (one == 'scissors' and two == 'paper') or
@@ -58,39 +72,49 @@ class Game:
     def play_round(self):
         move1 = self.p1.move()
         move2 = self.p2.move()
-        print(f"Player 1: {move1}  Player 2: {move2}")
+        print(f"you: {move1}  computer: {move2}")
+        if beats(move1, move2):
+            self.p1.score = self.p1.score + 1
+            print(' you won X)')
+        elif beats(move2, move1):
+            self.p2.score = self.p2.score + 1
+            print('Nooooo, you lose :(, Please win in the next game')
+        else:
+            print('Tied game')
+        print(f"scores: you: {self.p1.score}  computer: {self.p2.score}")
         self.p1.learn(move1, move2)
         self.p2.learn(move2, move1)
 
     def play_game(self):
         print("Game start!")
         for round in range(3):
-            print(f"Round {round}:")
+            print(f"Round {round + 1}:")
             self.play_round()
-        print("Game over!")
+        print("\nGame over! , now i well announce the winner: ")
+        print(f"scores: you: {self.p1.score}  computer: {self.p2.score}")
+        if self.p1.score > self.p2.score:
+            print("you are the winner!!!!")
+        elif self.p1.score < self.p2.score:
+            print("you lose :( ")
+        else:
+            print('no winners')
+
+
+def How_computer_will_be_play():
+    typeOfGame = input('How would you like to make a computer play ?'
+                       + ' random or reflect or cycler ?'
+                       + 'please make sure u write a full word:  ').lower()
+    if typeOfGame == 'random':
+        return Game(HumanPlayer(), RandomPlayer())
+    elif typeOfGame == 'reflect':
+        return Game(HumanPlayer(), ReflectPlayer())
+    elif typeOfGame == 'cycler':
+        return Game(HumanPlayer(), CyclePlayer())
+    else:
+        print('your input is wrong please rewrite it')
+        return How_computer_will_be_play()
 
 
 if __name__ == '__main__':
-    mode=input("select your mode:\n 1-RandomPlayer\n2-CyclerPlayer\n3-ReflectPlayer\n4-RepeatPlayer\n4-Player ").lower()
-    game = Game(RandomPlayer(),mode)
+    game = How_computer_will_be_play()
     game.play_game()
-
-"""
-عندك خمس ألعاب وهي :
-روك
-دخل وحرد عليك راندوم
-دخل والاولى حرد راندوم ثم بقعد أقلدك
-دخل وحرد عليك بعشوائي واستمر ارد عليك به لنهاية اللوب
-دخل وانا حرد بالترتيب بداية من الروك اى السكيوبمنت
-
-لازم في البداية الهيومن يدخل نوع اللعبة
-
-واذا دخل الهيومن نوع اللعبة لازم يدخل الان اداته
-
-بالنسبة للعبة الأولى بطلب منك تدخل خيار وبرد عليك روك ودخل ثاني وارد عليك روك إلى نهاية الراندوم
-بالنسبة للعبة الثانية بطلب منك تدخل خيار وبرد عليك بخيار من مخي وحتدخل انت وحدخل أنا من مخي الى نهاية الراندوم
-بالنسبة للعبة الثالثة بطلب منك تدخل خيار وبرد عليك نفس ردك  وتدخل الثاني وادخل مثلك وهكذا (اشوف وش كتبت انت في اللعبة الاخيرة واكتب مثله)ا
-بالنسبة للعبة الرابعة بطلب منك تدحل خبار وبرد عليك بالخيار الاول ثم دخل اي خيار وبرد عليك بالخيار الثاني وهكذا بالترتيب ارد عليك ( اشوف وش اخر شي انا نزلته وانزل غيره ) ا
-جمع النقاط
-احظ وش اخر لعبة لك
-"""
